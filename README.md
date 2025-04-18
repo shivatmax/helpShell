@@ -111,6 +111,51 @@ Then use it:
 cat complex-algorithm.js | hoi explain
 ```
 
+## Project mode & full‑shell tracking
+
+Terminal‑AI can organise everything you do into "projects" – a self‑contained folder that stores
+Markdown + JSON logs.  You can even capture **all** commands ( `cd`, `ls`, `git`… ) via a tracked subshell.
+
+### Quick start
+```bash
+# 1) create + jump into tracked subshell (auto‑creates project if missing)
+hoi project:shell myproj "Experiment with Volatility"
+# … do anything you like inside; when finished type `exit`
+# ← transcript is imported and logged.
+
+# 2) View or download logs
+hoi project:history myproj            # markdown
+hoi project:history myproj --json     # structured JSON
+
+# 3) Other project commands
+hoi project:list                      # list projects
+hoi project:info <name>               # show metadata
+hoi project:use  <name>               # set active project (no need for -p flag)
+hoi project:current                   # print the active project
+hoi project:clear                     # deactivate current project
+
+# Import an existing transcript manually
+hoi project:logfile <name> <path-to-file>
+```
+
+### What gets stored?
+A project folder lives in `~/.hoi-projects/<name>/` and contains:
+
+| file              | purpose                                |
+|-------------------|-----------------------------------------|
+| `project.json`    | metadata (name, description, timestamps) |
+| `history.md`      | human‑readable chronological log         |
+| `history.json`    | array of `{timestamp,prompt/output}`     |
+
+### Passive logging with `-p | --project`
+If you don't need full transcript capture you can simply attach prompts to a project:
+
+```bash
+hoi -p myproj "how to crack a zip password?"   # only this prompt/output logged
+```
+
+See the docs above for the rest of Terminal‑AI's capabilities.
+
 ## License
 
 MIT

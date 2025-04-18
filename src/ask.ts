@@ -19,6 +19,7 @@ import logUpdate from "log-update"
 import { renderMarkdown } from "./markdown"
 import { loadChat, saveChat } from "./chat"
 import { getCyberSecurityInfo, formatCyberQuery, isCyberSecurityQuery } from "./cyber"
+import { logCommand } from "./project"
 
 export async function ask(
   prompt: string | undefined,
@@ -34,6 +35,7 @@ export async function ask(
     reply?: boolean
     breakdown?: boolean
     cyber?: boolean
+    project?: string
   }
 ) {
   if (!prompt) {
@@ -252,6 +254,9 @@ export async function ask(
 
     logUpdate.clear()
     logUpdate(renderMarkdown(result.text).trim())
+    if (options.project) {
+      logCommand(options.project, formattedPrompt, result.text)
+    }
     logUpdate.done()
     process.exit()
   }
@@ -270,6 +275,10 @@ export async function ask(
     process.stdout.write(textPart)
   }
   process.stdout.write("\n")
+
+  if (options.project) {
+    logCommand(options.project, formattedPrompt, output)
+  }
 
   saveChat({
     messages: [...messages, { role: "assistant", content: output }],

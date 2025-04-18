@@ -1,6 +1,6 @@
 #:schema ./schema.json
 
-default_model = "gpt-4.1-mini"
+default_model = "gpt-4o-mini"
 # Replace this with your actual API key
 openai_api_key = "openai_api_key"
 
