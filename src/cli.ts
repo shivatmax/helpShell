@@ -293,6 +293,56 @@ async function main() {
       }
     })
 
+  cli.command("project:analyse <name> [...analysis]", "Ask AI to analyse a project's history")
+    .example("hoi project:analyse demo 'find issues and suggest next steps'")
+    .action(async (name, analysisParts, flags) => {
+      try {
+        const historyContent = readHistory(name, "json")
+        if (!historyContent) {
+          console.error("No history found for project")
+          process.exit(1)
+        }
+        // Use history as pipeInput to give context to AI
+        const analysisPrompt = Array.isArray(analysisParts)
+          ? analysisParts.join(" ")
+          : String(analysisParts)
+        await ask(analysisPrompt, {
+          ...flags,
+          pipeInput: historyContent,
+          // explicitly set project so result is logged as well
+          project: name,
+        })
+      } catch (e) {
+        console.error((e as Error).message)
+        process.exit(1)
+      }
+    })
+
+  cli.command("project:doc <name>", "Generate structured documentation using AI")
+    .option("--out <file>", "Save output to file instead of printing")
+    .action(async (name, flags) => {
+      try {
+        const historyJson = readHistory(name, "json")
+        if (!historyJson) {
+          console.error("No history found for project")
+          process.exit(1)
+        }
+        const docPrompt = `You are an assistant that creates comprehensive project documentation. Using the provided shell history JSON, build a detailed markdown document containing:\n\n1. Project overview (infer goals from commands)\n2. Chronological command log with explanations of what each step does and its output (summarise lengthy outputs).\n3. Issues or errors encountered and possible causes.\n4. Analysis of current state.\n5. Recommended next steps / improvements.\n6. Appendix with raw command list.\n\nReturn only markdown.`
+
+        const resultCapture: { output?: string } = {}
+        await ask(docPrompt, {
+          pipeInput: historyJson,
+          project: name,
+          stream: false,
+          ...flags,
+        }).then(() => {})
+
+      } catch (e) {
+        console.error((e as Error).message)
+        process.exit(1)
+      }
+    })
+
   const allCommands = getAllCommands(config)
   for (const command of allCommands) {
     const c = cli.command(command.command, command.description)
