@@ -1,0 +1,12 @@
+#:schema ./schema.json
+
+default_model = "gpt-4.1-mini"
+# Replace this with your actual API key
+openai_api_key = "openai_api_key"
+
+[[commands]]
+command = "analyze-code"
+description = "Analyze code quality and suggest improvements"
+prompt = "Analyze the following code for quality, performance, and security issues. Suggest specific improvements:\n```\n{{code}}\n```"
+[commands.variables]
+code = "cat {{file}}"
