@@ -49,3 +49,5 @@ tmp/
 # Generated files
 schema.json
 
+# Terminal AI
+terminal-ai.toml

@@ -13,6 +13,15 @@ export const MODEL_MAP: {
     {
       id: "gpt-4o-mini",
     },
+    {
+      id: "gpt-4.1-mini",
+    },
+    {
+      id: "gpt-4.1-nano",
+    },
+    {
+      id: "gpt-4.1",
+    },
   ],
   openai: [
     {
@@ -23,6 +32,12 @@ export const MODEL_MAP: {
     },
     {
       id: "openai-o3-mini",
+    },
+    {
+      id: "openai-o4-mini",
+    },
+    {
+      id: "openai-o3",
     },
   ],
   claude: [
@@ -36,6 +51,14 @@ export const MODEL_MAP: {
     },
   ],
   gemini: [
+    {
+      id: "gemini-2.5-pro-preview-03-25",
+      realId: "gemini-2.5-pro-preview-03-25",
+    },
+    {
+      id: "gemini-2.5-flash-preview-04-17",
+      realId: "gemini-2.5-flash-preview-04-17",
+    },
     {
       id: "gemini-2.0-flash",
       realId: "gemini-2.0-flash-exp",

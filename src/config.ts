@@ -98,17 +98,32 @@ export function loadConfig(): Config {
     },
   })
 
-  const globalConfig = joycon.loadSync(
+  function safeLoad(filenames: string[], cwd: string, stopDir: string) {
+    try {
+      return joycon.loadSync(filenames, cwd, stopDir).data as Config | undefined
+    } catch (err) {
+      // JoyCon will throw if it finds a file but fails to parse JSON/TOML.
+      // Instead of crashing the whole CLI we ignore the malformed file and
+      // continue – printing a helpful diagnostic so the user can fix it.
+      const message = err instanceof Error ? err.message : String(err)
+      console.warn(
+        `Warning: ignored malformed config while reading ${filenames.join(", ")} — ${message}`
+      )
+      return undefined
+    }
+  }
+
+  const globalConfig = safeLoad(
     ["config.json", "config.toml"],
     configDirPath,
     path.dirname(configDirPath)
-  ).data as Config | undefined
+  )
 
-  const localConfig = joycon.loadSync(
+  const localConfig = safeLoad(
     ["terminal-ai.json", "terminal-ai.toml"],
     process.cwd(),
     path.dirname(process.cwd())
-  ).data as Config | undefined
+  )
 
   return {
     ...globalConfig,
