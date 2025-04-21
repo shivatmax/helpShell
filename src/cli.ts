@@ -48,7 +48,12 @@ function applyCommonFlags(command: CliCommand) {
   command.option("--no-stream", "Disable streaming output")
   command.option("-r, --reply", "Reply to previous conversation")
   command.option("--cyber", "Activate cybersecurity specialist mode")
-  command.option("-p, --project <name>", "Specify a project to log this session")
+  command.option("-p, --project <n>", "Specify a project to log this session")
+  command.option("--read-docs <n>", "Read indexed docs collection as context")
+  command.option("--add-docs <url>", "Add docs from URL to vector DB")
+  command.option("--name-docs <n>", "Collection name when adding docs")
+  command.option("--crawl", "Recursively crawl links under the same domain when adding docs")
+  command.option("--max-pages <number>", "Maximum pages to crawl (default 30)")
   return command
 }
 
@@ -61,8 +66,26 @@ async function main() {
   applyCommonFlags(root)
 
   root.action(async (prompt, flags) => {
-    const pipeInput = await readPipeInput()
     const project = flags.project || getActiveProject()
+
+    if (flags.addDocs) {
+      if (!flags.nameDocs) {
+        throw new CliError("--name-docs is required when using --add-docs")
+      }
+      const { VectorDB } = await import("./vector-db")
+      const vdb = new VectorDB()
+      console.log(`Fetching & indexing docs from ${flags.addDocs} ...`)
+      const added = await vdb.addDocs(
+        flags.nameDocs,
+        flags.addDocs,
+        { crawl: flags.crawl, maxPages: flags.maxPages ? Number(flags.maxPages) : undefined }
+      )
+      console.log(`Indexed ${added} chunks into collection '${flags.nameDocs}'.`)
+      return
+    }
+
+    const pipeInput = await readPipeInput()
+
     await ask(prompt.join(" "), { ...flags, project, pipeInput })
   })
 

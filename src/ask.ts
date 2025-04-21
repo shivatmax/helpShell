@@ -20,6 +20,7 @@ import { renderMarkdown } from "./markdown"
 import { loadChat, saveChat } from "./chat"
 import { getCyberSecurityInfo, formatCyberQuery, isCyberSecurityQuery } from "./cyber"
 import { logCommand } from "./project"
+import { VectorDB } from "./vector-db"
 
 export async function ask(
   prompt: string | undefined,
@@ -36,6 +37,8 @@ export async function ask(
     breakdown?: boolean
     cyber?: boolean
     project?: string
+    readDocs?: string
+    [key: string]: any
   }
 ) {
   if (!prompt) {
@@ -133,6 +136,26 @@ export async function ask(
 
   const files = await loadFiles(options.files || [])
   const remoteContents = await fetchUrl(options.url || [])
+
+  // Handle vector DB docs
+  let docsContext: string[] = []
+  if (options.readDocs) {
+    try {
+      const vdb = new VectorDB()
+      const docs = await vdb.similaritySearch(options.readDocs, prompt, 8)
+      if (docs.length > 0) {
+        docsContext = [
+          `docs:${options.readDocs}:`,
+          ...docs.map((d) => `"""
+${d.text}
+"""`),
+        ]
+      }
+    } catch (e) {
+      // ignore if vector db fails
+    }
+  }
+
   const context = [
     // inhert prev chat
     !chat &&
@@ -153,8 +176,12 @@ export async function ask(
 
     remoteContents.length > 0 && "remote contents:",
     ...remoteContents.map(
-      (content) => `${content.url}:\n"""\n${content.content}\n"""`
+      (content) => `${content.url}:
+"""
+${content.content}
+"""`
     ),
+    ...docsContext,
   ]
     .filter(notEmpty)
     .join("\n")
