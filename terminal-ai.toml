@@ -1,0 +1,14 @@
+#:schema ./schema.json
+#default_model = "gpt-4o-mini"
+default_model = "gemini-2.5-flash-preview-04-17"
+# Replace this with your actual API key
+openai_api_key = "YOUR_OPENAI_API"
+gemini_api_key = "YOUR_GEMINI_API"
+
+[[commands]]
+command = "gen-config-md"
+description = "Generate config.md docs from Config type"
+prompt = "Given code:\n```ts\n{{code}}\n```\nUpdate the documentation for the Config type in the code if changes are required, return the markdown only if changes are made, or NONE if unchanged, existing documentation:\n{{config}}"
+[commands.variables]
+code = "cat src/config.ts"
+config = "cat docs/config.md"

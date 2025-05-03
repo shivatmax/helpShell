@@ -50,5 +50,5 @@ tmp/
 schema.json
 
 # Terminal AI
-terminal-ai.toml
+# terminal-ai.toml
 paper.tex
