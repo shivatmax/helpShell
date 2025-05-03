@@ -1,6 +1,6 @@
 {
-  "name": "termitalk",
-  "version": "0.1.0",
+  "name": "helpshell",
+  "version": "1.0.0",
   "description": "Command-line AI assistant that powers up your terminal",
   "type": "module",
   "bin": {
@@ -12,13 +12,14 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/shivatmax/termitalk"
+    "url": "https://github.com/shivatmax/helpShell"
   },
   "scripts": {
     "build": "pnpm gen-config-schema && tsup",
     "dev": "pnpm build --watch",
     "prepublishOnly": "pnpm build",
-    "gen-config-schema": "bun scripts/gen-config-schema.ts"
+    "gen-config-schema": "bun scripts/gen-config-schema.ts",
+    "link": "npm link"
   },
   "dependencies": {
     "@ai-sdk/anthropic": "1.0.2",
